@@ -41,8 +41,8 @@ runs:
       with:
         arguments: appendProperties -build-file prepare.gradle
       env:
-        CONSUMER_ACTOR: ${{ secrets.CONSUMER_ACTOR }}
-        CONSUMER_TOKEN: ${{ secrets.CONSUMER_TOKEN }}
+        CONSUMER_ACTOR: ${{ inputs.consumer-actor }}
+        CONSUMER_TOKEN: ${{ inputs.consumer-token }}
     - name: Extract test files
       uses: gradle/gradle-build-action@v2
       with:
