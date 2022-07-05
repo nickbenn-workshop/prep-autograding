@@ -1,0 +1,78 @@
+plugins {
+    id 'java'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+group 'com.tlglearning'
+// version must be specified in gradle.properties
+
+def solutionArtifact = "${project.name}-${project.solutionSuffix}"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = 'GitHubPackages'
+        url = "https://maven.pkg.github.com/${project.organization}/*"
+        credentials {
+            username = project.consumerUser
+            password = project.consumerToken
+        }
+    }
+}
+
+dependencies {
+
+    def junitVersion = '5.8.2'
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+
+    testRuntimeOnly "${project.group}:${solutionArtifact}:${stem(project.version as String)}.+:${project.testsClassifier}"
+
+}
+
+task copyTests(type: Copy) {
+    def pattern = ~"^.*${solutionArtifact}-.*-${project.testsClassifier}.jar\$"
+    def jarFile = configurations.testRuntimeClasspath.find {
+        it.name.matches(pattern)
+    }
+    from zipTree(jarFile)
+    into "${projectDir}/autograding/"
+}
+
+task copyConfiguration(type: Copy) {
+    dependsOn 'copyTests'
+    from "${projectDir}/autograding/autograding.json"
+    into "${projectDir}/.github/classroom/"
+}
+
+task copyReport(type: Copy) {
+    from("${testReportDir}/test") {
+        include '**/*'
+    }
+    into "${testReportDir}/autograded/${project.reportName}/"
+}
+
+test {
+    useJUnitPlatform()
+    compileTestJava.enabled = false
+    processTestResources.enabled = false
+    dependsOn classes
+    dependsOn 'copyTests'
+    classpath -= testClassesDirs
+    classpath -= files("${buildDir}/resources/test")
+    testClassesDirs = files("${projectDir}/autograding")
+    testLogging {
+        events 'passed', 'failed', 'skipped'
+    }
+    finalizedBy copyReport
+}
+
+static String stem(String version) {
+    version.substring(0, version.lastIndexOf('.'))
+}
