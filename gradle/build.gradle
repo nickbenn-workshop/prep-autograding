@@ -74,5 +74,6 @@ test {
 }
 
 static String stem(String version) {
+    print(version)
     version.substring(0, version.lastIndexOf('.'))
 }
