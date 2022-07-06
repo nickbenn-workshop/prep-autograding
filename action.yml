@@ -22,14 +22,13 @@ runs:
     - name: Setup Java 
       uses: actions/setup-java@v3
       with:
-        distribution: 'corretto'
-        java-version: '11'
-        architecture: 'x64'
+        distribution: corretto
+        java-version: 11
+        architecture: x64
+        cache: gradle
     - name: Make gradlew executable
       run: chmod +x ${{ inputs.workspace }}/gradlew
       shell: bash
-    - name: Validate Gradle wrapper
-      uses: gradle/wrapper-validation-action@v1
     - name: Rename existing Gradle build file
       run: mv ${{ inputs.workspace }}/build.gradle ${{ inputs.workspace }}/submitted.gradle
       shell: bash
@@ -37,13 +36,11 @@ runs:
       run: mv ${{ github.action_path }}/gradle/* ${{ inputs.workspace }}/
       shell: bash
     - name: Prepare autograding credentials
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: appendProperties -build-file prepare.gradle
+      run: ${{ inputs.workspace }}/gradlew appendProperties -build-file prepare.gradle
+      shell: bash
       env:
         CONSUMER_ACTOR: ${{ inputs.consumer-actor }}
         CONSUMER_TOKEN: ${{ inputs.consumer-token }}
     - name: Extract test files
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: copyConfiguration -PreportName=.
+      run: ${{ inputs.workspace }}/gradlew copyConfiguration -PreportName=.
+      shell: bash
