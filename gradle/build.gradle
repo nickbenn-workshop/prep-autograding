@@ -20,7 +20,7 @@ repositories {
         name = 'GitHubPackages'
         url = "https://maven.pkg.github.com/${project.organization}/*"
         credentials {
-            username = project.consumerUser
+            username = project.consumerActor
             password = project.consumerToken
         }
     }

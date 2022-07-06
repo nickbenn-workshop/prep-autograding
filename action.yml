@@ -38,11 +38,11 @@ runs:
       shell: bash
     - name: Prepare autograding credentials
       uses: gradle/gradle-build-action@v2
+      with:
+        arguments: appendProperties -build-file prepare.gradle
       env:
         CONSUMER_ACTOR: ${{ inputs.consumer-actor }}
         CONSUMER_TOKEN: ${{ inputs.consumer-token }}
-      with:
-        arguments: appendProperties -build-file prepare.gradle
     - name: Extract test files
       uses: gradle/gradle-build-action@v2
       with:
