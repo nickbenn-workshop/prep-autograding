@@ -75,20 +75,3 @@ test {
 static String stem(String version) {
     version.substring(0, version.lastIndexOf('.'))
 }
-
-task appendProperties(type: WriteProperties) {
-    outputFile = file("${projectDir}/gradle.properties")
-    properties(readProperties("${projectDir}/gradle.properties", "${projectDir}/autograding.properties"))
-    property('consumerActor', System.getenv('CONSUMER_ACTOR'))
-    property('consumerToken', System.getenv('CONSUMER_TOKEN'))
-}
-
-static Map<String, String> readProperties(String... filenames) {
-    def props = new Properties()
-    filenames.each {
-        new File(it).withInputStream {
-            props.load(it)
-        }
-    }
-    props as Map<String, String>
-}

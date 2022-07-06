@@ -43,10 +43,6 @@ runs:
       env:
         CONSUMER_ACTOR: ${{ inputs.consumer-actor }}
         CONSUMER_TOKEN: ${{ inputs.consumer-token }}
-    - name: Prepare autograding credentials
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: properties -build-file prepare.gradle
     - name: Extract test files
       uses: gradle/gradle-build-action@v2
       with:
